@@ -10,7 +10,7 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class ModMemoryTypes {
+public class HodgepodgeMemoryTypes {
 
     public static final DeferredRegister<MemoryModuleType<?>> MEMORY_TYPES = DeferredRegister.create(Hodgepodge.MOD_ID, Registries.MEMORY_MODULE_TYPE);
 
@@ -22,6 +22,10 @@ public class ModMemoryTypes {
 
     private static <U> Supplier<MemoryModuleType<U>> register(String id) {
         return MEMORY_TYPES.register(id, () -> new MemoryModuleType<>(Optional.empty()));
+    }
+
+    public static void init() {
+        MEMORY_TYPES.register();
     }
 
 }

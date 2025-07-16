@@ -1,4 +1,7 @@
 package me.thecuddlybear.hodgepodge.entity.ai.brain;
 
-public record TeleportTarget() {
+
+import net.minecraft.world.entity.Entity;
+
+public record TeleportTarget(Entity entity) {
 }
