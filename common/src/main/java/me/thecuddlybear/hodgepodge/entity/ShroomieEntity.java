@@ -67,6 +67,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBrainOwner<ShroomieEntity> {
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("animation.shroomie.idle");
@@ -201,8 +202,8 @@ public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBra
         builder.define(TYPE, 0);
     }
 
-    public static AttributeSupplier.Builder createShroomieAttributes() {
-        return TamableAnimal.createMobAttributes().add(Attributes.MOVEMENT_SPEED, 0.25D).add(Attributes.MAX_HEALTH, 8.0D).add(Attributes.ATTACK_DAMAGE, 2.0D);
+    public static Supplier<AttributeSupplier.Builder> createShroomieAttributes() {
+        return () -> TamableAnimal.createMobAttributes().add(Attributes.MOVEMENT_SPEED, 0.25D).add(Attributes.MAX_HEALTH, 8.0D).add(Attributes.ATTACK_DAMAGE, 2.0D);
     }
 
     @Override
