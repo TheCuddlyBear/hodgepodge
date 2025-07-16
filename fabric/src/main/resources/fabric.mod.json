@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "hodgepodge",
+  "version": "${version}",
+  "name": "Hodgepodge",
+  "description": "",
+  "authors": [
+    ""
+  ],
+  "contact": {
+    "homepage": ""
+  },
+  "license": "All-Rights-Reserved",
+  "icon": "assets/hodgepodge/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "me.thecuddlybear.hodgepodge.fabric.HodgepodgeFabric"
+    ],
+    "client": [
+      "me.thecuddlybear.hodgepodge.fabric.client.HodgepodgeFabricClient"
+    ]
+  },
+  "mixins": [
+    "hodgepodge.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.14",
+    "minecraft": "~1.21.6",
+    "java": ">=21",
+    "architectury": ">=17.0.6",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}
