@@ -1,7 +1,11 @@
 package me.thecuddlybear.hodgepodge.entity;
 
+import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import me.thecuddlybear.hodgepodge.Hodgepodge;
+import me.thecuddlybear.hodgepodge.entity.ai.HodgepodgeMemoryTypes;
+import me.thecuddlybear.hodgepodge.entity.ai.brain.task.FollowOwnerTask;
+import me.thecuddlybear.hodgepodge.entity.ai.brain.task.TeleportToTargetTask;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -18,7 +22,9 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -29,12 +35,23 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.tslat.smartbrainlib.api.SmartBrainOwner;
+import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
 import net.tslat.smartbrainlib.api.core.SmartBrainProvider;
+import net.tslat.smartbrainlib.api.core.behaviour.OneRandomBehaviour;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.look.LookAtTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.BreedWithPartner;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.misc.Idle;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.move.FloatToSurfaceOfFluid;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.move.FollowParent;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.move.MoveToWalkTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.path.SetRandomWalkTarget;
+import net.tslat.smartbrainlib.api.core.behaviour.custom.target.SetRandomLookTarget;
 import net.tslat.smartbrainlib.api.core.sensor.ExtendedSensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.InWaterSensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyAdultSensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyLivingEntitySensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyPlayersSensor;
+import net.tslat.smartbrainlib.util.BrainUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -82,8 +99,56 @@ public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBra
     }
 
     // TODO: core tasks
-    // TODO: idle tasks
-    // TODO: activity priorities
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public BrainActivityGroup<? extends ShroomieEntity> getCoreTasks() {
+        return new BrainActivityGroup<ShroomieEntity>(Activity.CORE)
+                .priority(0)
+                .behaviours(
+                        new FloatToSurfaceOfFluid<>().riseChance(0.5f),
+                        new TeleportToTargetTask(),
+                        new FollowOwnerTask(),
+                        new LookAtTarget<>().runFor(entity -> entity.getRandom().nextIntBetweenInclusive(45, 90)),
+                        new MoveToWalkTarget<>()
+                                .startCondition(entity -> !BrainUtil.hasMemory(entity, HodgepodgeMemoryTypes.TELEPORT_TARGET.get()))
+                                .stopIf(entity -> BrainUtil.hasMemory(entity, HodgepodgeMemoryTypes.TELEPORT_TARGET.get()))
+                );
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public BrainActivityGroup<? extends ShroomieEntity> getIdleTasks() {
+        return new BrainActivityGroup<ShroomieEntity>(Activity.IDLE)
+                .priority(10)
+                .behaviours(
+                        new BreedWithPartner<>(),
+                        new FollowParent<>(),
+                        // SET entity
+                        new SetRandomLookTarget<>()
+                                .lookTime(entity -> entity.getRandom().nextIntBetweenInclusive(150, 250)),
+                        new OneRandomBehaviour<>(
+                                Pair.of(
+                                        new SetRandomWalkTarget<ShroomieEntity>()
+                                                .speedModifier(1.0F)
+                                                .setRadius(24, 12),
+                                        4
+                                ),
+                                Pair.of(
+                                        new Idle<ShroomieEntity>().runFor(entity -> entity.getRandom().nextIntBetweenInclusive(100, 300)),
+                                        3
+                                )
+                        ).startCondition(entity -> !BrainUtil.hasMemory(entity, MemoryModuleType.WALK_TARGET))
+                );
+    }
+
+    @Override
+    public List<Activity> getActivityPriorities() {
+        return ObjectArrayList.of(
+                Activity.CORE,
+                Activity.IDLE
+        );
+    }
 
     @Override
     protected Brain.@NotNull Provider<?> brainProvider() {
