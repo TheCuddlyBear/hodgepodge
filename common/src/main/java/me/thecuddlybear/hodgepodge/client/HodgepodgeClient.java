@@ -8,7 +8,7 @@ import me.thecuddlybear.hodgepodge.entity.HodgepodgeEntities;
 public class HodgepodgeClient {
 
     public static void init(){
-        EntityRendererRegistry.register(HodgepodgeEntities.SHROOMIE, ShroomieEntityRenderer::new);
+        // Client common code
     }
 
 }
