@@ -10,6 +10,7 @@ dependencies {
 
     modImplementation "software.bernie.geckolib:geckolib-common-${minecraft_version}:${geckolib_version}"
     modImplementation "net.tslat.smartbrainlib:SmartBrainLib-fabric-${project.minecraft_version}:${project.sbl_version}"
+    modImplementation("me.fzzyhmstrs:fzzy_config:${fzzyConfigVersion}")
 
     modImplementation "dev.architectury:architectury:$rootProject.architectury_api_version"
 }

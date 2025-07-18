@@ -29,6 +29,8 @@
     "minecraft": "~1.21.6",
     "java": ">=21",
     "architectury": ">=17.0.6",
+    "smartbrainlib": ">=1.16.8",
+    "geckolib": ">=5.2.0",
     "fabric-api": "*"
   },
   "suggests": {

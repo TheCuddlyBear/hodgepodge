@@ -34,5 +34,19 @@ versionRange = "[17.0.6,)"
 ordering = "AFTER"
 side = "BOTH"
 
+[[dependencies.hodgepodge]]
+modId="smartbrainlib"
+mandatory=true
+versionRange="[1.16.8,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.hodgepodge]]
+modId="geckolib"
+mandatory=true
+versionRange="[5.2.0,)"
+ordering="NONE"
+side="BOTH"
+
 [[mixins]]
 config = "hodgepodge.mixins.json"
