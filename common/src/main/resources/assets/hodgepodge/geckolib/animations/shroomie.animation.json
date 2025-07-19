@@ -3,7 +3,7 @@
 	"animations": {
 		"animation.shroomie.idle": {
 			"loop": true,
-			"animation_length": 1.75,
+			"animation_length": 1.875,
 			"bones": {
 				"right_arm": {
 					"rotation": {
@@ -17,6 +17,17 @@
 						"1.75": {
 							"vector": [0, 0, 0],
 							"easing": "easeInOutSine"
+						}
+					},
+					"position": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [0, -0.8, 0]
+						},
+						"1.875": {
+							"vector": [0, 0, 0]
 						}
 					}
 				},
@@ -32,6 +43,30 @@
 						"1.75": {
 							"vector": [0, 0, 0],
 							"easing": "easeInOutSine"
+						}
+					},
+					"position": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [0, -0.8, 0]
+						},
+						"1.875": {
+							"vector": [0, 0, 0]
+						}
+					}
+				},
+				"body+head": {
+					"position": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [0, -0.8, 0]
+						},
+						"1.875": {
+							"vector": [0, 0, 0]
 						}
 					}
 				}

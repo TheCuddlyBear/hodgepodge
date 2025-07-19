@@ -72,6 +72,8 @@ import java.util.function.Supplier;
 public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBrainOwner<ShroomieEntity> {
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("animation.shroomie.idle");
     protected static final RawAnimation SIT_ANIM = RawAnimation.begin().thenLoop("animation.shroomie.sitting");
+
+
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
 
     public static final Predicate<LivingEntity> FOLLOW_TAMED_PREDICATE;
@@ -123,8 +125,8 @@ public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBra
         return new BrainActivityGroup<ShroomieEntity>(Activity.IDLE)
                 .priority(10)
                 .behaviours(
-                        new BreedWithPartner<>(),
-                        new FollowParent<>(),
+                        new BreedWithPartner<>().startCondition(entity -> !this.isOrderedToSit()),
+                        new FollowParent<>().startCondition(entity -> !this.isOrderedToSit()),
                         // SET entity
                         new SetRandomLookTarget<>()
                                 .lookTime(entity -> entity.getRandom().nextIntBetweenInclusive(150, 250)),
@@ -132,7 +134,7 @@ public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBra
                                 Pair.of(
                                         new SetRandomWalkTarget<ShroomieEntity>()
                                                 .speedModifier(1.0F)
-                                                .setRadius(24, 12),
+                                                .setRadius(24, 12).startCondition(entity -> !this.isOrderedToSit()),
                                         4
                                 ),
                                 Pair.of(
@@ -310,13 +312,10 @@ public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBra
     }
 
     protected <E extends ShroomieEntity> PlayState predicate(final AnimationTest<E> animTest) {
-        if(this.isInSittingPose()){
+        if(this.isOrderedToSit()){
+            System.out.println("Entity is sitting - playing sit animation");
             return animTest.setAndContinue(SIT_ANIM);
         }
-        if(animTest.isMoving()){
-            return animTest.setAndContinue(IDLE_ANIM);
-        }
-
         return animTest.setAndContinue(IDLE_ANIM);
     }
 

@@ -16,8 +16,13 @@
 					"pivot": [-0.5, 0, 0]
 				},
 				{
-					"name": "lower_body",
+					"name": "body+head",
 					"parent": "body",
+					"pivot": [-0.5, 0, 0]
+				},
+				{
+					"name": "lower_body",
+					"parent": "body+head",
 					"pivot": [-0.5, 2, 1],
 					"cubes": [
 						{"origin": [-6.5, 4, -6], "size": [13, 12, 12], "uv": [0, 38]}
@@ -25,8 +30,8 @@
 				},
 				{
 					"name": "upper_body",
-					"parent": "body",
-					"pivot": [-0.5, 16, 6],
+					"parent": "body+head",
+					"pivot": [-0.5, 16, -7],
 					"cubes": [
 						{"origin": [-8.5, 16, -8.5], "size": [17, 4, 17], "uv": [0, 0]},
 						{"origin": [-7.5, 20, -7.5], "size": [15, 2, 15], "uv": [0, 21]}
