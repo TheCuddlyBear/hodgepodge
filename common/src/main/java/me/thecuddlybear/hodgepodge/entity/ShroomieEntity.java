@@ -190,7 +190,7 @@ public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBra
     @Override
     protected void addAdditionalSaveData(ValueOutput output) {
         super.addAdditionalSaveData(output);
-        output.putInt("ShroomieType", this.getShroomieType());
+        output.putInt("ShroAmberspiomieType", this.getShroomieType());
         output.putBoolean("OrderedToSit", this.entityData.get(SITTING));
     }
 
