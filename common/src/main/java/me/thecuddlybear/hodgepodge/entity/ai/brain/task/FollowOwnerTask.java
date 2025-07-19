@@ -1,6 +1,7 @@
 package me.thecuddlybear.hodgepodge.entity.ai.brain.task;
 
 import com.mojang.datafixers.util.Pair;
+import me.thecuddlybear.hodgepodge.entity.SittableAnimal;
 import me.thecuddlybear.hodgepodge.entity.ai.HodgepodgeMemoryTypes;
 import me.thecuddlybear.hodgepodge.entity.ai.brain.TeleportTarget;
 import me.thecuddlybear.hodgepodge.util.MemoryList;
@@ -19,7 +20,7 @@ import net.tslat.smartbrainlib.util.BrainUtil;
 import java.util.List;
 import java.util.function.Function;
 
-public class FollowOwnerTask extends ExtendedBehaviour<TamableAnimal> {
+public class FollowOwnerTask<T extends TamableAnimal & SittableAnimal> extends ExtendedBehaviour<T> {
 
     private static final MemoryList MEMORIES = MemoryList.create(1)
             .registered(
@@ -55,7 +56,7 @@ public class FollowOwnerTask extends ExtendedBehaviour<TamableAnimal> {
     }
 
     @Override
-    protected boolean checkExtraStartConditions(ServerLevel level, TamableAnimal entity) {
+    protected boolean checkExtraStartConditions(ServerLevel level, T entity) {
         LivingEntity owner = entity.getOwner();
         if(owner == null) {
             return false;
@@ -63,7 +64,7 @@ public class FollowOwnerTask extends ExtendedBehaviour<TamableAnimal> {
         if(owner.isSpectator()) {
             return false;
         }
-        if(entity.isOrderedToSit()) {
+        if(entity.IsSitting()) {
             return false;
         }
         if(entity.distanceToSqr(owner) < this.range.getMinValue() * this.range.getMinValue()) {
@@ -74,8 +75,8 @@ public class FollowOwnerTask extends ExtendedBehaviour<TamableAnimal> {
     }
 
     @Override
-    protected boolean shouldKeepRunning(TamableAnimal entity) {
-        if(entity.isOrderedToSit() || this.owner == null) {
+    protected boolean shouldKeepRunning(T entity) {
+        if(entity.IsSitting() || this.owner == null) {
             return false;
         }
 
@@ -84,7 +85,7 @@ public class FollowOwnerTask extends ExtendedBehaviour<TamableAnimal> {
     }
 
     @Override
-    protected void tick(TamableAnimal entity) {
+    protected void tick(T entity) {
         Brain<?> brain = entity.getBrain();
         BrainUtil.setMemory(brain, MemoryModuleType.LOOK_TARGET, new EntityTracker(this.owner, true));
 

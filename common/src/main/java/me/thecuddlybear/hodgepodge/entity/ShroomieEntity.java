@@ -69,7 +69,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBrainOwner<ShroomieEntity> {
+public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBrainOwner<ShroomieEntity>, SittableAnimal {
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("animation.shroomie.idle");
     protected static final RawAnimation SIT_ANIM = RawAnimation.begin().thenLoop("animation.shroomie.sitting");
 
@@ -191,14 +191,14 @@ public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBra
     protected void addAdditionalSaveData(ValueOutput output) {
         super.addAdditionalSaveData(output);
         output.putInt("ShroomieType", this.getShroomieType());
-        output.putBoolean("OrderedToSit", this.entityData.get(SITTING));
+        output.putBoolean("OrderedToSit", this.IsSitting());
     }
 
     @Override
     protected void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
         this.setShroomieType(input.getIntOr("ShroomieType", 0));
-        this.entityData.set(SITTING, input.getBooleanOr("OrderedToSit", false));
+        this.SetSitting(input.getBooleanOr("OrderedToSit", false));
     }
 
     @Override
@@ -276,7 +276,7 @@ public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBra
                     return InteractionResult.CONSUME;
                 } else{
                     this.setOrderedToSit(!this.isOrderedToSit());
-                    this.entityData.set(SITTING, !this.entityData.get(SITTING));
+                    this.SetSitting(!this.IsSitting());
                     this.gameEvent(GameEvent.ENTITY_INTERACT);
                     return InteractionResult.SUCCESS;
                 }
@@ -291,7 +291,7 @@ public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBra
                     this.setTarget((LivingEntity)null);
                     this.setTame(true, true);
                     this.setOrderedToSit(true);
-                    this.entityData.set(SITTING, true);
+                    this.SetSitting(true);
                     this.gameEvent(GameEvent.ENTITY_INTERACT);
                     this.level().broadcastEntityEvent(this, (byte)7);
                 }else {
@@ -318,8 +318,7 @@ public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBra
     }
 
     protected <E extends ShroomieEntity> PlayState predicate(final AnimationTest<E> animTest) {
-        if(this.entityData.get(SITTING)){
-            System.out.println("Entity is sitting - playing sit animation");
+        if(this.IsSitting()){
             return animTest.setAndContinue(SIT_ANIM);
         }
         return animTest.setAndContinue(IDLE_ANIM);
@@ -365,4 +364,13 @@ public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBra
 
     }
 
+    @Override
+    public boolean IsSitting() {
+        return this.entityData.get(SITTING);
+    }
+
+    @Override
+    public void SetSitting(boolean sit) {
+        this.entityData.set(SITTING, sit);
+    }
 }
