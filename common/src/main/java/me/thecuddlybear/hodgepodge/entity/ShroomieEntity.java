@@ -84,6 +84,7 @@ public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBra
     public static final int PINK_TYPE = 4;
     public static final Map<Integer, ResourceLocation> TEXTURES;
     private static final EntityDataAccessor<Integer> TYPE;
+    private static final EntityDataAccessor<Boolean> SITTING;
 
     public ShroomieEntity(EntityType<? extends TamableAnimal> entityType, Level level){
         super(entityType, level);
@@ -190,18 +191,21 @@ public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBra
     protected void addAdditionalSaveData(ValueOutput output) {
         super.addAdditionalSaveData(output);
         output.putInt("ShroomieType", this.getShroomieType());
+        output.putBoolean("OrderedToSit", this.entityData.get(SITTING));
     }
 
     @Override
     protected void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
         this.setShroomieType(input.getIntOr("ShroomieType", 0));
+        this.entityData.set(SITTING, input.getBooleanOr("OrderedToSit", false));
     }
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(TYPE, 0);
+        builder.define(SITTING, false);
     }
 
     public static Supplier<AttributeSupplier.Builder> createShroomieAttributes() {
@@ -272,6 +276,7 @@ public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBra
                     return InteractionResult.CONSUME;
                 } else{
                     this.setOrderedToSit(!this.isOrderedToSit());
+                    this.entityData.set(SITTING, !this.entityData.get(SITTING));
                     this.gameEvent(GameEvent.ENTITY_INTERACT);
                     return InteractionResult.SUCCESS;
                 }
@@ -286,6 +291,7 @@ public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBra
                     this.setTarget((LivingEntity)null);
                     this.setTame(true, true);
                     this.setOrderedToSit(true);
+                    this.entityData.set(SITTING, true);
                     this.gameEvent(GameEvent.ENTITY_INTERACT);
                     this.level().broadcastEntityEvent(this, (byte)7);
                 }else {
@@ -312,7 +318,7 @@ public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBra
     }
 
     protected <E extends ShroomieEntity> PlayState predicate(final AnimationTest<E> animTest) {
-        if(this.isOrderedToSit()){
+        if(this.entityData.get(SITTING)){
             System.out.println("Entity is sitting - playing sit animation");
             return animTest.setAndContinue(SIT_ANIM);
         }
@@ -347,6 +353,7 @@ public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBra
             return entityType == EntityType.SHEEP || entityType == EntityType.MOOSHROOM;
         };
         TYPE = SynchedEntityData.defineId(ShroomieEntity.class, EntityDataSerializers.INT);
+        SITTING = SynchedEntityData.defineId(ShroomieEntity.class, EntityDataSerializers.BOOLEAN);
 
         TEXTURES = new HashMap<>();
 

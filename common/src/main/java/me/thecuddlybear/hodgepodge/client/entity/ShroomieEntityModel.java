@@ -61,4 +61,6 @@ public class ShroomieEntityModel extends GeoModel<ShroomieEntity> {
         head.setRotX(Math.min(Math.max(0, pitch * ((float) Math.PI / 130F)), 20 * ((float) Math.PI / 130F)));
         //head.setRotY(yaw * ((float) Math.PI / 180F));
     }
+
+
 }
