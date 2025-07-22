@@ -112,7 +112,7 @@ public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBra
                 .behaviours(
                         new FloatToSurfaceOfFluid<>().riseChance(0.5f),
                         new TeleportToTargetTask(),
-                        new FollowOwnerTask(),
+                        new FollowOwnerTask<>(),
                         new LookAtTarget<>().runFor(entity -> entity.getRandom().nextIntBetweenInclusive(45, 90)),
                         new MoveToWalkTarget<>()
                                 .startCondition(entity -> !BrainUtil.hasMemory(entity, HodgepodgeMemoryTypes.TELEPORT_TARGET.get()))
@@ -126,8 +126,8 @@ public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBra
         return new BrainActivityGroup<ShroomieEntity>(Activity.IDLE)
                 .priority(10)
                 .behaviours(
-                        new BreedWithPartner<>().startCondition(entity -> !this.isOrderedToSit()),
-                        new FollowParent<>().startCondition(entity -> !this.isOrderedToSit()),
+                        new BreedWithPartner<>().startCondition(entity -> !this.IsSitting()).stopIf(entity -> this.IsSitting()),
+                        new FollowParent<>().startCondition(entity -> !this.IsSitting()).stopIf(entity -> this.IsSitting()),
                         // SET entity
                         new SetRandomLookTarget<>()
                                 .lookTime(entity -> entity.getRandom().nextIntBetweenInclusive(150, 250)),
@@ -135,14 +135,14 @@ public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBra
                                 Pair.of(
                                         new SetRandomWalkTarget<ShroomieEntity>()
                                                 .speedModifier(1.0F)
-                                                .setRadius(24, 12).startCondition(entity -> !this.isOrderedToSit()),
+                                                .setRadius(24, 12).startCondition(entity -> !this.isOrderedToSit()).stopIf(entity -> this.IsSitting()),
                                         4
                                 ),
                                 Pair.of(
                                         new Idle<ShroomieEntity>().runFor(entity -> entity.getRandom().nextIntBetweenInclusive(100, 300)),
                                         3
                                 )
-                        ).startCondition(entity -> !BrainUtil.hasMemory(entity, MemoryModuleType.WALK_TARGET))
+                        ).startCondition(entity -> !BrainUtil.hasMemory(entity, MemoryModuleType.WALK_TARGET)).stopIf(entity -> this.IsSitting())
                 );
     }
 
@@ -198,7 +198,9 @@ public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBra
     protected void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
         this.setShroomieType(input.getIntOr("ShroomieType", 0));
-        this.SetSitting(input.getBooleanOr("OrderedToSit", false));
+        boolean sitting = input.getBooleanOr("OrderedToSit", false);
+        this.setOrderedToSit(sitting);
+        this.SetSitting(sitting);
     }
 
     @Override
