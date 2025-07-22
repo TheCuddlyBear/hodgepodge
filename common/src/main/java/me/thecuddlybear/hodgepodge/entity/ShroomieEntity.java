@@ -72,7 +72,7 @@ import java.util.function.Supplier;
 public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBrainOwner<ShroomieEntity>, SittableAnimal {
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("animation.shroomie.idle");
     protected static final RawAnimation SIT_ANIM = RawAnimation.begin().thenLoop("animation.shroomie.sitting");
-
+    protected static final RawAnimation WALK_ANIM = RawAnimation.begin().thenLoop("animation.shroomie.walk");
 
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
 
@@ -320,6 +320,8 @@ public class ShroomieEntity extends TamableAnimal implements GeoEntity, SmartBra
     protected <E extends ShroomieEntity> PlayState predicate(final AnimationTest<E> animTest) {
         if(this.IsSitting()){
             return animTest.setAndContinue(SIT_ANIM);
+        }else if(animTest.isMoving()){
+            return animTest.setAndContinue(WALK_ANIM);
         }
         return animTest.setAndContinue(IDLE_ANIM);
     }
